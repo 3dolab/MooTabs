@@ -27,7 +27,9 @@ var MooTabs = new Class({
         duration: 400,
         transition: 'expo:in:out',
         autoPlay: true,
-        autoPlayWait: 10000
+        autoPlayWait: 10000,
+        totalTabs: 1,
+	loop: true
     },
 
     initialize: function(tabs, contents, options) {
@@ -40,6 +42,7 @@ var MooTabs = new Class({
         this.contentsList = this.contentsElement.getChildren('li');
 
         this.slideFx = new Fx.Morph(this.contentsElement, {
+	    link: 'chain',
             fps : this.options.fps,
             duration: this.options.duration,
             transition: this.options.transition
@@ -50,7 +53,8 @@ var MooTabs = new Class({
 
         this.contentsElement.setStyle('left', this.currentPosition + 'px');
         this.currentIndex = this.options.startIndex;
-        this.tabsCount = this.tabsList.length;
+
+	this.tabsCount = (this.tabsList.length - this.options.totalTabs + 1);
 
         this.activeTab = this.tabsList[this.currentIndex].addClass(this.options.activeClass);
         this.activeContents = this.contentsList[this.currentIndex];
@@ -64,6 +68,7 @@ var MooTabs = new Class({
 
         this.tabsList.each(function(tab, i) {
             this.setupTabs(tab, this.contentsList[i], i);
+	    this.contentsList[i].setProperty('id', i);
         }, this);
 
         if (this.options.autoPlay) {
@@ -74,16 +79,19 @@ var MooTabs = new Class({
     setupTabs: function(tab, contents, i) {
         tab.addEvent('mousedown', function(e) {
             if (tab != this.activeTab) {
-                this.stop().play();
+                //this.stop().play();
                 this.activeTab.removeClass(this.options.activeClass);
                 this.activeTab = tab;
                 this.activeTab.addClass(this.options.activeClass);
 
                 var d = (i - this.currentIndex) * this.windowWidth;
+
                 this.currentPosition -= d;
+		var currentPos = this.currentPosition;
                 this.slideFx.start({
                         left: this.currentPosition + 'px'
-                });
+		});
+
 
                 this.currentIndex = i;
                 this.fireEvent('change', [tab, contents]);
@@ -101,9 +109,19 @@ var MooTabs = new Class({
         return this;
     },
 
+    reverse: function(){
+        this.player = this.previousSlide.periodical(this.options.autoPlayWait, this);
+        return this;
+    },
+
     nextSlide: function() {
+      	    if (this.options.loop = true){
+	      this.forward(this.tabsList[this.currentIndex], this.contentsList, this.currentIndex);
+	      return this;
+	    }
+	    
         if (this.currentIndex == this.tabsCount-1) {
-            this.tabsList[0].fireEvent('mousedown');
+	    this.tabsList[0].fireEvent('mousedown');
         } else {
             this.tabsList[this.currentIndex+1].fireEvent('mousedown');
         }
@@ -111,8 +129,47 @@ var MooTabs = new Class({
     },
 
     previousSlide: function() {
+            if (this.options.loop = true){
+	      this.backward(this.tabsList[this.currentIndex], this.contentsList, this.currentIndex);
+	      return this;
+	    }
         if (this.currentIndex == 0) this.tabsList[this.tabsCount-1].fireEvent('mousedown');
         else this.tabsList[this.currentIndex-1].fireEvent('mousedown');
+        return this;
+    },
+
+    forward:  function(tab, contentlist, i) {
+        var d = this.windowWidth;
+	this.currentPosition -= d;
+
+	      this.contentsElement.setStyle('width', (this.contentsElement.getStyle('width').toInt()+d));
+	      this.contentsElement.getFirst('li').setStyle('margin-left', 0);
+	      this.contentsElement.getLast('li').setStyle('margin-right', 0);
+	      this.contentsElement.getFirst('li').inject(this.contentsElement, 'bottom');
+	      this.contentsElement.getFirst('li').setStyle('margin-left', -this.currentPosition);
+
+	this.slideFx.start({
+                        left: this.currentPosition + 'px'
+		});
+	this.currentIndex = i;
+        this.fireEvent('change', [tab, contents[i]]);
+        return this;
+    },
+			
+    backward:   function(tab, contentlist, i) {
+        var d = -this.windowWidth;
+	this.currentPosition -= d;
+
+	      this.contentsElement.setStyle('width', (this.contentsElement.getStyle('width').toInt()+d));
+	      this.contentsElement.getFirst('li').setStyle('margin-left', 0);
+	      this.contentsElement.getLast('li').inject(this.contentsElement, 'top');
+	      this.contentsElement.getFirst('li').setStyle('margin-left', -this.currentPosition);
+
+	this.slideFx.start({
+                        left: this.currentPosition + 'px'
+		});
+	this.currentIndex = i;
+        this.fireEvent('change', [tab, contents[i]]);
         return this;
     }
 
