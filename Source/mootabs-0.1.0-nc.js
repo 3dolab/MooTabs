@@ -70,7 +70,7 @@ var MooTabs = new Class({
 
         this.tabsList.each(function(tab, i) {
             this.setupTabs(tab, this.contentsList[i], i);
-	    //this.contentsList[i].setProperty('id', i);
+	    this.contentsList[i].setProperty('id', i);
         }, this);
 
         if (this.options.autoPlay) {
@@ -102,18 +102,7 @@ var MooTabs = new Class({
 		var currentPos = this.currentPosition;
                 this.slideFx.start({
                         left: this.currentPosition + 'px'
-                        /*
-                }).chain(function() {
-		  	    if (this.options.loop = true){
-		var tabMargin = tabsContainer.getFirst('li').getStyle('margin-left').toInt();
-		alert(tabMargin+d);
-		tabsContainer.getFirst('li').dispose();
-		tabsContainer.getFirst('li').setStyle('margin-left', -currentPos);
-		alert('dispose');
-		}*/
 		});
-
-
                 this.currentIndex = i;
                 this.fireEvent('change', [tab, contents]);
             }
@@ -137,7 +126,7 @@ var MooTabs = new Class({
 
     nextSlide: function() {
 	if (this.options.loop = true){
-		this.forward(this.tabsList[this.currentIndex], this.contentsList, this.currentIndex);
+		this.step(this.tabsList[this.currentIndex], this.contentsList, this.currentIndex,'forward');
 		return this;
 	}
         if (this.currentIndex == this.tabsCount-1) {
@@ -150,7 +139,7 @@ var MooTabs = new Class({
 
     previousSlide: function() {
 	if (this.options.loop = true){
-		this.backward(this.tabsList[this.currentIndex], this.contentsList, this.currentIndex);
+		this.step(this.tabsList[this.currentIndex], this.contentsList, this.currentIndex,'backward');
 		return this;
 	}
         if (this.currentIndex == 0) this.tabsList[this.tabsCount-1].fireEvent('mousedown');
@@ -158,73 +147,63 @@ var MooTabs = new Class({
         return this;
     },
 
-    forward:  function(tab, contentlist, i) {
-	this.stop();
-        var d = this.windowWidth;
-	this.currentPosition -= d;
-	if (this.currentPosition >= 0){
-	    if (this.contentsElement.getStyle('width').toInt() > this.initialWidth)
-		this.contentsElement.setStyle('width', (this.contentsElement.getStyle('width').toInt()-d));
-	    else
-		this.contentsElement.setStyle('width', this.initialWidth);
-	}else{
-		this.contentsElement.setStyle('width', (this.contentsElement.getStyle('width').toInt()+d));
-	}	      
-	var firstmargin = this.contentsElement.getLast('li').getStyle('margin-left').toInt();
-	if (firstmargin >= 0){
-		firstmargin = -d;
+    step:  function(tab, contentlist, i, direction) {
+	this.stop();        
+	if (direction == 'forward') {
+		var d = this.windowWidth;
+		this.currentPosition -= d;
+		var firstmargin = this.contentsElement.getLast('li').getStyle('margin-left').toInt();
+		if (firstmargin >= 0){
+			firstmargin = -d;
+		}
+		if (this.currentPosition >= 0){
+			if (this.contentsElement.getStyle('width').toInt() > this.initialWidth)
+				this.contentsElement.setStyle('width', (this.contentsElement.getStyle('width').toInt()-d));
+			else
+				this.contentsElement.setStyle('width', this.initialWidth);
+		} else {
+			this.contentsElement.setStyle('width', (this.contentsElement.getStyle('width').toInt()+d));
+		}
+		this.contentsElement.getFirst('li').inject(this.contentsElement, 'bottom');
+		this.contentsElement.getLast('li').clone().inject(this.contentsElement, 'top');
+		if (this.currentPosition >= 0)
+		  this.contentsElement.getLast('li').setStyle('margin-left', firstmargin+d);
+		else if (this.currentPosition < 0)
+		  this.contentsElement.getLast('li').setStyle('margin-left', 0);
+	} else if (direction == 'backward'){
+	  	var d = -this.windowWidth;
+		this.currentPosition -= d;
+		var firstmargin = this.contentsElement.getFirst('li').getStyle('margin-left').toInt();
+		if (this.currentPosition > 0)
+		  this.contentsElement.setStyle('width', (this.contentsElement.getStyle('width').toInt()-d));
+		this.contentsElement.getLast('li').inject(this.contentsElement, 'top');
+		this.contentsElement.getFirst('li').clone().inject(this.contentsElement, 'bottom');
+		this.contentsElement.getFirst('li').setStyle('margin-left', firstmargin+d);
+		if (this.currentPosition <= 0)
+		  this.contentsElement.getFirst('li').getNext('li').setStyle('margin-left', 0);	      
 	}
-	      this.contentsElement.getFirst('li').inject(this.contentsElement, 'bottom');
-	      this.contentsElement.getLast('li').clone().inject(this.contentsElement, 'top');
-	if (this.currentPosition >= 0)
-	      this.contentsElement.getLast('li').setStyle('margin-left', firstmargin+d);
-	else if (this.currentPosition < 0)
-	      this.contentsElement.getLast('li').setStyle('margin-left', 0);
-
-	      var currentPos = this.currentPosition;
-	      var tabsContainer = this.contentsElement;
+	var initialWidth = this.initialWidth;
+	var currentPos = this.currentPosition;
+	var tabsContainer = this.contentsElement;
+	
 	this.slideFx.start({
                         left: this.currentPosition + 'px'
-		}).chain(function() {
-		tabsContainer.getFirst('li').dispose();
-		tabsContainer.getFirst('li').setStyle('margin-left', -currentPos);
-		});
-
-	this.currentIndex = i;
-        this.fireEvent('change', [tab, contentlist[i]]);
-        return this;
-    },
-			
-    backward:   function(tab, contentlist, i) {
-	this.stop();
-        var d = -this.windowWidth;
-	this.currentPosition -= d;
-	      var firstmargin = this.contentsElement.getFirst('li').getStyle('margin-left').toInt();
-	if (this.currentPosition > 0){
-		this.contentsElement.setStyle('width', (this.contentsElement.getStyle('width').toInt()-d));
-	}
-	      this.contentsElement.getLast('li').inject(this.contentsElement, 'top');
-	      this.contentsElement.getFirst('li').clone().inject(this.contentsElement, 'bottom');
-	      this.contentsElement.getFirst('li').setStyle('margin-left', firstmargin+d);
-	if (this.currentPosition <= 0)
-	      this.contentsElement.getFirst('li').getNext('li').setStyle('margin-left', 0);
-  
-	      var initialWidth = this.initialWidth;
-	      var currentPos = this.currentPosition;
-	      var tabsContainer = this.contentsElement;
-	this.slideFx.start({
-                        left: this.currentPosition + 'px'
-		}).chain(function() {
-		tabsContainer.getLast('li').dispose();
-		tabsContainer.getFirst('li').setStyle('margin-left', -currentPos);
-	if (currentPos <= 0){
-	    if (tabsContainer.getStyle('width').toInt() > initialWidth)
-		tabsContainer.setStyle('width', (tabsContainer.getStyle('width').toInt()+d));
-	    else
-		tabsContainer.setStyle('width', initialWidth);
-	    }
-		});
-
+	}).chain(function() {
+		if (direction == 'forward') {
+			tabsContainer.getFirst('li').dispose();
+			tabsContainer.getFirst('li').setStyle('margin-left', -currentPos);
+		} else if (direction == 'backward'){
+			tabsContainer.getLast('li').dispose();
+			tabsContainer.getFirst('li').setStyle('margin-left', -currentPos);
+			if (currentPos <= 0){
+				if (tabsContainer.getStyle('width').toInt() > initialWidth)
+					tabsContainer.setStyle('width', (tabsContainer.getStyle('width').toInt()+d));
+				else
+					tabsContainer.setStyle('width', initialWidth);
+			}
+		
+		}
+	});
 	this.currentIndex = i;
         this.fireEvent('change', [tab, contentlist[i]]);
         return this;
