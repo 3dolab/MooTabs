@@ -228,44 +228,5 @@ var MooTabs = new Class({
 	this.currentIndex = i;
         this.fireEvent('change', [tab, contentlist[i]]);
         return this;
-    },
-    backwardbackup:   function(tab, contentlist, i) {
-	this.stop();
-        var d = -this.windowWidth;
-	this.currentPosition -= d;
-	      var firstmargin = this.contentsElement.getFirst('li').getStyle('margin-left').toInt();
-	if (this.currentPosition > 0){
-		this.contentsElement.setStyle('width', (this.contentsElement.getStyle('width').toInt()-d));
-	}
-
-	this.contentsElement.getLast('li').setStyle('margin-right', 0);
-	this.contentsElement.getLast('li').inject(this.contentsElement, 'top');
-	this.contentsElement.getFirst('li').clone().inject(this.contentsElement, 'bottom');
-	if (this.currentPosition <= 0)
-		this.contentsElement.getFirst('li').setStyle('margin-left', firstmargin+d);
-	else
-		this.contentsElement.getFirst('li').getNext('li').setStyle('margin-left', 0);
-  
-	var initialWidth = this.initialWidth;
-	var currentPos = this.currentPosition;
-	var tabsContainer = this.contentsElement;
-	this.slideFx.start({
-                        left: this.currentPosition + 'px'
-	}).chain(function() {
-		tabsContainer.getLast('li').dispose();
-		if (currentPos <= 0){
-			tabsContainer.getFirst('li').setStyle('margin-left', -currentPos);
-			if (tabsContainer.getStyle('width').toInt() > initialWidth)
-				tabsContainer.setStyle('width', (tabsContainer.getStyle('width').toInt()+d));
-			else
-				tabsContainer.setStyle('width', initialWidth);
-		} else {
-			tabsContainer.getLast('li').setStyle('margin-right', currentPos);
-		}	    
-	});
-
-	this.currentIndex = i;
-        this.fireEvent('change', [tab, contentlist[i]]);
-        return this;
     }
 });
