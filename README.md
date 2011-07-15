@@ -128,3 +128,4 @@ Known Bugs
   Use different MooTabs object for each Tabpane.
 * The event onmousedown default action is not stopped (check with links and anchors)
 * Multiple clicks on previous/next buttons overlapping / not chained
+* Tab controls inject/dispose with more than 1 step in loop mode
