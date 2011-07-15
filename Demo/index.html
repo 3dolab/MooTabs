@@ -15,7 +15,7 @@
                 tabs = $$('.tabs');
                 contents = $$('.contents');
 
-                var tabView = new MooTabs(tabs, contents, {autoPlayWait: 5000});
+                var tabView = new MooTabs(tabs, contents, {autoPlayWait: 5000, loop:true});
 
                 tabView.addEvent('change', function(tab, content) {
                     var message = 'Changed to: ' + tab.get('text');
@@ -45,6 +45,7 @@
     </script>
 </head>
 <body>
+<h1>Loop enabled</h1>
     <div id="wrapper">
         <ul class="tabs">
             <li>Simple to use</li>
