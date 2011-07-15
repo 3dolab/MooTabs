@@ -127,5 +127,4 @@ Known Bugs
   eg. tab-1, content-1, tab-2, content-2 and soon.
   Use different MooTabs object for each Tabpane.
 * The event onmousedown default action is not stopped (check with links and anchors)
-* Double click on previous/next button overlapping / not chained
-* Auto height of the container actually takes the content size, but it should consider the tallest among the content elements
+* Multiple clicks on previous/next buttons overlapping / not chained
