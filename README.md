@@ -126,6 +126,9 @@ Known Bugs
 * The above limitation though could be rouded off by using different class names
   eg. tab-1, content-1, tab-2, content-2 and soon.
   Use different MooTabs object for each Tabpane.
-* The event onmousedown default action is not stopped (check with links and anchors)
 * Multiple clicks on previous/next buttons overlapping / not chained
-* Tab controls inject/dispose with more than 1 step in loop mode
+
+Roadmap/Wishlist
+----------------
+* Script size!! Merging the 'step' method into 'setupTabs' (bind event to 'previous/nextSlide' methods, without checking against 'loop': otherwise the event onmousedown default action won't be stopped, check with links and anchors)
+* Find the event 'click' srcElement and apply a "disabled" class when the 'bounce' option is set to false
