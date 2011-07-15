@@ -7,7 +7,7 @@ switching between the panes.
 Fork new features
 -----------------
 * Option 'loop': boolean, to seamlessly play while keeping direction like a carousel (default to false)
-* Option 'totaltabs': integer, to display more than one tab pane at once within the frame (default to 1)
+* Option 'totaltabs': integer, to display more than one tab segment at once within the frame (default to 1)
 * Option 'bounce': boolean, to continue playing when left/right limits are reached (default to true)
 * Method 'reverse'
 
@@ -122,7 +122,10 @@ You can make them appear as tab panes using following code:
 
 Known Bugs
 ----------
-* Currently allows only one tab pane per page
+* It currently allows only one tab pane per page
 * The above limitation though could be rouded off by using different class names
   eg. tab-1, content-1, tab-2, content-2 and soon.
   Use different MooTabs object for each Tabpane.
+* The event onmousedown default action is not stopped (check with links and anchors)
+* Double click on previous/next button overlapping / not chained
+* Auto height of the container actually takes the content size, but it should consider the tallest among the content elements
