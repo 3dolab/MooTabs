@@ -7,8 +7,14 @@ license: MIT-style
 authors:
 - Nayaab Akhtar
 
+fork by:
+- 3dolab
+
 requires:
   core/1.2.1: '*'
+  
+tested with:
+  up to MooTools 1.3.2
 
 provides: [MooTabs]
 
@@ -76,7 +82,6 @@ var MooTabs = new Class({
 
         this.tabsList.each(function(tab, i) {
             this.setupTabs(tab, this.contentsList[i], i);
-	    //this.contentsList[i].setProperty('id', i);
         }, this);
 
         if (this.options.autoPlay) {
@@ -85,24 +90,22 @@ var MooTabs = new Class({
     },
 
     setupTabs: function(tab, contents, i) {
-        tab.addEvent('mousedown', function(e) {
+        tab.addEvent('click', function(e) {
             //if (tab != this.activeTab) {
+		e.stop();
 		new Event(e).stop();
 		this.stop();
-                //this.stop().play();
 		this.activeTab.removeClass(this.options.activeClass);
-		if (this.options.totalTabs !=1){
-			if (i < this.tabsCount-1){
+		if (this.options.totalTabs != 1){
+			if (i < this.tabsCount-1 || this.options.loop == true){
 				this.activeTab = tab;
-			}else {
+			}else if (this.options.loop != true){
 				this.activeTab = this.tabsList[this.tabsCount-1];
 				i = this.tabsCount-1;
 			}
 		} else {                
-			this.activeTab = tab;                
+			this.activeTab = tab;
 		}
-		//alert('current'+this.currentIndex);
-		//alert('i'+i);
 		this.activeTab.addClass(this.options.activeClass);
 		var d = (i - this.currentIndex) * this.windowWidth;
 		this.currentPosition -= d;
@@ -125,10 +128,11 @@ var MooTabs = new Class({
 				} else {
 					this.contentsElement.setStyle('width', (this.contentsElement.getStyle('width').toInt()+d));
 				}
-				this.contentsElement.getFirst('li').inject(this.contentsElement, 'bottom');
-				this.contentsElement.getLast('li').clone().inject(this.contentsElement, 'top');
+				this.contentsElement.getChildren('li')[step-1].inject(this.contentsElement, 'bottom');
+				
+				this.contentsElement.getLast('li').clone().inject(this.contentsElement.getChildren('li')[step-1], 'before');
 				if (this.currentPosition >= 0)
-				  this.contentsElement.getLast('li').setStyle('margin-left', firstmargin+d);
+				  this.contentsElement.getLast('li').setStyle('margin-left', firstmargin+d/gap);
 				else if (this.currentPosition < 0)
 				  this.contentsElement.getLast('li').setStyle('margin-left', 0);
 			    }
@@ -140,13 +144,13 @@ var MooTabs = new Class({
 				var firstmargin = this.contentsElement.getFirst('li').getStyle('margin-left').toInt();
 				if (this.currentPosition > 0)
 				  this.contentsElement.setStyle('width', (this.contentsElement.getStyle('width').toInt()-d));
-				this.contentsElement.getLast('li').inject(this.contentsElement, 'top');
-				this.contentsElement.getFirst('li').clone().inject(this.contentsElement, 'bottom');
-				this.contentsElement.getFirst('li').setStyle('margin-left', firstmargin+d);
+				this.contentsElement.getChildren('li')[this.contentsElement.getChildren('li').length-step].inject(this.contentsElement, 'top');
+				this.contentsElement.getFirst('li').clone().inject(this.contentsElement.getChildren('li')[this.contentsElement.getChildren('li').length-step], 'after');
+				this.contentsElement.getFirst('li').setStyle('margin-left', firstmargin+d/gap);
 				if (this.currentPosition <= 0)
-				 this.contentsElement.getFirst('li').getNext('li').setStyle('margin-left', 0);
+					this.contentsElement.getFirst('li').getNext('li').setStyle('margin-left', 0);
 			    }
-			 } 
+			} 
 		}
 		
 		var initialWidth = this.initialWidth;
@@ -157,11 +161,9 @@ var MooTabs = new Class({
                 this.slideFx.start({
                         left: this.currentPosition + 'px'
 		}).chain(function() {
-		    //alert(this.currentIndex);
 		    if (this.options.loop = true){
 		      if (i >= preIndex){
 			  //dir forward
-			  //alert('forward');
 			var gap = i - preIndex;
 			var step;
 			for (step = 1; step <= gap; step++){
@@ -170,7 +172,6 @@ var MooTabs = new Class({
 			tabsContainer.getFirst('li').setStyle('margin-left', -currentPos);
 		      } else if (i < preIndex){
 			  //dir backward
-			  //alert('backward');
 			var gap = preIndex - i;
 			var step;
 			for (step = 1; step <= gap; step++){
@@ -211,7 +212,6 @@ var MooTabs = new Class({
 
     nextSlide: function() {
 	if (this.options.loop = true){
-	  //alert(this.currentIndex);
 		if (this.currentIndex == this.tabsList.length-1)
 			this.step(this.tabsList[0], this.contentsList, 0,'forward');
 		else
@@ -220,9 +220,9 @@ var MooTabs = new Class({
 	}
         if (this.currentIndex == this.tabsCount-1) {
 	    if (this.options.bounce != false)
-		this.tabsList[0].fireEvent('mousedown');
+		this.tabsList[0].fireEvent('click');
         } else {
-		this.tabsList[this.currentIndex+1].fireEvent('mousedown');
+		this.tabsList[this.currentIndex+1].fireEvent('click');
         }
         return this;
     },
@@ -237,8 +237,8 @@ var MooTabs = new Class({
 	}
         if (this.currentIndex == 0){
 	  if (this.options.bounce != false)
-	    this.tabsList[this.tabsCount-1].fireEvent('mousedown');
-        } else this.tabsList[this.currentIndex-1].fireEvent('mousedown');
+	    this.tabsList[this.tabsCount-1].fireEvent('click');
+        } else this.tabsList[this.currentIndex-1].fireEvent('click');
         return this;
     },
 
@@ -247,8 +247,6 @@ var MooTabs = new Class({
 	this.activeTab.removeClass(this.options.activeClass);
 	this.activeTab = tab;
 	this.activeTab.addClass(this.options.activeClass);
-		//alert('current'+this.currentIndex);
-		//alert('i'+i);
 	if (direction == 'forward') {
 		var d = this.windowWidth;
 		this.currentPosition -= d;
