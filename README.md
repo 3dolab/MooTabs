@@ -4,6 +4,13 @@ MooTabs
 Allows creation of Tabbed-Panes and provides transition effects when
 switching between the panes.
 
+Fork new features
+-----------------
+* Option 'loop': boolean, to seamlessly play while keeping direction like a carousel (default to false)
+* Option 'totaltabs': integer, to display more than one tab pane at once within the frame (default to 1)
+* Option 'bounce': boolean, to continue playing when left/right limits are reached (default to true)
+* Method 'reverse'
+
 ![Screenshot](http://nayaab.github.com/MooTabs/screenshot.png)
 
 Demo
