@@ -52,6 +52,9 @@ var MooTabs = new Class({
         });
 
 	this.windowHeight = this.contentsElement.getSize().y;
+	this.contentHeights = new Array();
+	this.contentsElement.getChildren('li').each(function(el,i){ this.contentHeights[i] = el.getSize().y;},this);
+	this.windowHeight = Math.max.apply(Math, this.contentHeights);
         this.windowWidth = this.contentsList[0].getSize().x;
         this.currentPosition = -(this.options.startIndex * this.windowWidth);
 
@@ -98,7 +101,8 @@ var MooTabs = new Class({
 		} else {                
 			this.activeTab = tab;                
 		}
-		
+		//alert('current'+this.currentIndex);
+		//alert('i'+i);
 		this.activeTab.addClass(this.options.activeClass);
 		var d = (i - this.currentIndex) * this.windowWidth;
 		this.currentPosition -= d;
@@ -148,22 +152,26 @@ var MooTabs = new Class({
 		var initialWidth = this.initialWidth;
 		var currentPos = this.currentPosition;
 		var tabsContainer = this.contentsElement;
+		var preIndex = this.currentIndex;
 		
                 this.slideFx.start({
                         left: this.currentPosition + 'px'
 		}).chain(function() {
+		    //alert(this.currentIndex);
 		    if (this.options.loop = true){
-		      if (i >= this.currentIndex){
+		      if (i >= preIndex){
 			  //dir forward
-			var gap = i - this.currentIndex;
+			  //alert('forward');
+			var gap = i - preIndex;
 			var step;
 			for (step = 1; step <= gap; step++){
 			    tabsContainer.getFirst('li').dispose();
 			}
 			tabsContainer.getFirst('li').setStyle('margin-left', -currentPos);
-		      } else if (i < this.currentIndex){
+		      } else if (i < preIndex){
 			  //dir backward
-			var gap = this.currentIndex - i;
+			  //alert('backward');
+			var gap = preIndex - i;
 			var step;
 			for (step = 1; step <= gap; step++){
 			    tabsContainer.getLast('li').dispose();
@@ -177,7 +185,7 @@ var MooTabs = new Class({
 			}
 		      }
 		    }
-		});
+		}.bind(this));
 		
 		
                 this.currentIndex = i;
@@ -239,6 +247,8 @@ var MooTabs = new Class({
 	this.activeTab.removeClass(this.options.activeClass);
 	this.activeTab = tab;
 	this.activeTab.addClass(this.options.activeClass);
+		//alert('current'+this.currentIndex);
+		//alert('i'+i);
 	if (direction == 'forward') {
 		var d = this.windowWidth;
 		this.currentPosition -= d;
@@ -293,7 +303,7 @@ var MooTabs = new Class({
 			}
 		
 		}
-	});
+	}.bind(this));
 	this.currentIndex = i;
         this.fireEvent('change', [tab, contentlist[i]]);
         return this;
