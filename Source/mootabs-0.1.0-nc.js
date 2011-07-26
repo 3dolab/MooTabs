@@ -70,16 +70,18 @@ var MooTabs = new Class({
 	this.tabsCount = (this.tabsList.length - this.options.totalTabs + 1);
 
         this.activeTab = this.tabsList[this.currentIndex].addClass(this.options.activeClass);
-        this.activeContents = this.contentsList[this.currentIndex];
+        this.activeContents = this.contentsList[this.currentIndex].addClass(this.options.activeClass);
 
         var contentsWindow = new Element('div', {
             'class': this.options.windowClass
         });
-	contentsWindow.setStyles({ height: this.windowHeight, 'overflow-x': 'hidden', 'overflow-y': 'visible'});
+	//contentsWindow.setStyles({ height: this.windowHeight, 'overflow-x': 'hidden', 'overflow-y': 'visible'});
+	contentsWindow.setStyles({ height: this.windowHeight });
 
         contentsWindow.inject(this.tabsElement, 'after');
         contentsWindow.grab(this.contentsElement);
 
+	this.isRunning = false;
         this.tabsList.each(function(tab, i) {
             this.setupTabs(tab, this.contentsList[i], i);
         }, this);
@@ -93,8 +95,11 @@ var MooTabs = new Class({
         tab.addEvent('click', function(e) {
             //if (tab != this.activeTab) {
 		e.stop();
-		new Event(e).stop();
-		this.stop();
+		//new Event(e).stop();
+		//this.stop();
+		if (this.isRunning)
+		  return false;
+		this.isRunning = true;
 		this.activeTab.removeClass(this.options.activeClass);
 		if (this.options.totalTabs != 1){
 			if (i < this.tabsCount-1 || this.options.loop == true){
@@ -109,7 +114,7 @@ var MooTabs = new Class({
 		this.activeTab.addClass(this.options.activeClass);
 		var d = (i - this.currentIndex) * this.windowWidth;
 		this.currentPosition -= d;
-		
+		this.contentsElement.getFirst('li').removeClass(this.options.activeClass);
 		if (this.options.loop = true){
 			if (i >= this.currentIndex){
 			  //dir forward
@@ -186,11 +191,11 @@ var MooTabs = new Class({
 			}
 		      }
 		    }
+		    tabsContainer.getFirst('li').addClass(this.options.activeClass);
+		    this.currentIndex = i;
+		    this.fireEvent('change', [tab, contents]);
+		    this.isRunning = false;
 		}.bind(this));
-		
-		
-                this.currentIndex = i;
-                this.fireEvent('change', [tab, contents]);
             //} //END ACTIVE TAB
         }.bind(this));
     },
@@ -201,7 +206,7 @@ var MooTabs = new Class({
     },
 
     stop: function() {
-        $clear(this.player);
+        clearInterval(this.player);
         return this;
     },
 
@@ -243,10 +248,14 @@ var MooTabs = new Class({
     },
 
     step:  function(tab, contentlist, i, direction) {
-	this.stop();
+	//this.stop();
+		if (this.isRunning)
+		  return false;
+		this.isRunning = true;
 	this.activeTab.removeClass(this.options.activeClass);
 	this.activeTab = tab;
 	this.activeTab.addClass(this.options.activeClass);
+	this.contentsElement.getFirst('li').removeClass(this.options.activeClass);
 	if (direction == 'forward') {
 		var d = this.windowWidth;
 		this.currentPosition -= d;
@@ -301,9 +310,11 @@ var MooTabs = new Class({
 			}
 		
 		}
+		tabsContainer.getFirst('li').addClass(this.options.activeClass);
+		this.currentIndex = i;
+		this.fireEvent('change', [tab, contentlist[i]]);
+		this.isRunning = false;
 	}.bind(this));
-	this.currentIndex = i;
-        this.fireEvent('change', [tab, contentlist[i]]);
         return this;
     }
 });
