@@ -4,8 +4,8 @@
 <head>
     <title>MooTabs - Tabs for MooTools</title>
     <link rel="stylesheet" type="text/css" href="main.css" />
-    <script type="text/javascript" src="mootools-1.2.1-core-yc.js"></script>
-    <script type="text/javascript" src="../Source/mootabs-0.1.0-nc.js"></script>
+    <script type="text/javascript" src="mootools-core-1.3.2-full-nocompat-yc.js"></script>
+    <script type="text/javascript" src="mootabs-0.1.0-looped.js"></script>
     <script>
         window.addEvent('domready', main);
 
@@ -15,37 +15,136 @@
                 tabs = $$('.tabs');
                 contents = $$('.contents');
 
-                var tabView = new MooTabs(tabs, contents, {autoPlayWait: 5000, loop:true});
+                var tabView = new MooTabs(tabs, contents, {autoPlayWait: 2000, autoPlay: false, loop:true});
 
                 tabView.addEvent('change', function(tab, content) {
                     var message = 'Changed to: ' + tab.get('text');
                     $$('.events').set('text', message);
                 });
 
-                $('next').addEvent('click', function() {
+                $('next').addEvent('click', function(e) {
+		    e.stop();
                     tabView.nextSlide();
                 });
 
-                $('prev').addEvent('click', function() {
+                $('prev').addEvent('click', function(e) {
+		    e.stop();
                     tabView.previousSlide();
                 });
 
-                $('stop').addEvent('click', function() {
+                $('stop').addEvent('click', function(e) {
+		    e.stop();
                     tabView.stop();
                 });
 
-                $('play').addEvent('click', function() {
+                $('play').addEvent('click', function(e) {
+		    e.stop();
                     tabView.play();
+                });
+
+                $('reverse').addEvent('click', function(e) {
+		    e.stop();
+                    tabView.reverse();
                 });
 
                 tabView.addEvent('click', function() {
                     alert('c.innerText');
                 });
+
+		var mtabs, mcontents;
+
+                mtabs = $$('.mtabs');
+                mcontents = $$('.mcontents');
+
+                var tabMultiView = new MooTabs(mtabs, mcontents, {autoPlayWait: 2000, windowClass: 'multicontentsWindow', autoPlay: false, totalTabs: 2, loop:true, startIndex: 0});
+
+                tabMultiView.addEvent('change', function(tab, content) {
+                    var message = 'Changed to: ' + tab.get('text');
+                    $$('.mevents').set('text', message);
+                });
+
+                $('mnext').addEvent('click', function(e) {
+		    e.stop();
+                    tabMultiView.nextSlide();
+                });
+
+                $('mprev').addEvent('click', function(e) {
+		    e.stop();
+                    tabMultiView.previousSlide();
+                });
+
+                $('mstop').addEvent('click', function(e) {
+		    e.stop();
+                    tabMultiView.stop();
+                });
+
+                $('mplay').addEvent('click', function(e) {
+		    e.stop();
+                    tabMultiView.play();
+                });
+
+                $('mreverse').addEvent('click', function(e) {
+		    e.stop();
+                    tabMultiView.reverse();
+                });
+
+                tabMultiView.addEvent('click', function() {
+                    alert('c.innerText');
+                });
             }
     </script>
 </head>
-<body>
-<h1>Loop enabled</h1>
+<body>    
+    <div id="wrapper2">
+        <ul class="mtabs">
+            <li>New Features</li>
+            <li>Loop</li>
+            <li>Reverse</li>
+	    <li>Multiple tabs at once</li>
+	    <li>Start index</li>
+        </ul>
+        <ul class="mcontents">
+            <li>
+                <h1>New features in this fork</h1>
+                <p>
+                    The Default MooTabs has been improved
+                </p>
+            </li>
+            <li>
+                <h1>Loop</h1>
+                <p>
+                    Advance without changing direction, like a carousel
+                </p>
+            </li>
+            <li>
+                <h1>Reverse</h1>
+                <p>
+                    Auto play in reverse order
+                </p>
+            </li>
+            <li>
+                <h1>Multiple tabs</h1>
+                <p>
+                    Frame extended to hold more than one tab at once
+                </p>
+            </li>
+            <li>
+                <h1>Start index</h1>
+                <p>
+                    Set the first tab to be displayed
+                </p>
+            </li>
+        </ul>
+        <button id="mprev">Prev</button>
+        <button id="mnext">Next</button>
+        <button id="mreverse">reverse</button>
+        <button id="mstop">stop</button>
+        <button id="mplay">play</button>
+        <span class="mevents">Events shown here</span>
+    </div>
+<br />
+<hr />
+<br />
     <div id="wrapper">
         <ul class="tabs">
             <li>Simple to use</li>
@@ -77,6 +176,7 @@
         </ul>
         <button id="prev">Prev</button>
         <button id="next">Next</button>
+        <button id="reverse">reverse</button>
         <button id="stop">stop</button>
         <button id="play">play</button>
         <span class="events">Events shown here</span>
