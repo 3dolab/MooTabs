@@ -120,13 +120,14 @@ You can make them appear as tab panes using following code:
 
     var tabView = new MooTabs(tabs, contents);
 
-Known Bugs
-----------
-* It currently allows only one tab pane per page
-* The above limitation though could be rouded off by using different class names
-  eg. tab-1, content-1, tab-2, content-2 and soon.
-  Use different MooTabs object for each Tabpane.
-* Multiple clicks on previous/next buttons overlapping / not chained
+Known Limitations
+-----------------
+* It currently allows only one tab pane set per page
+  (workaround: use different class names 
+  eg. tab-1, content-1, tab-2, content-2 and so on,
+  Use different MooTabs object for each Tabpane)
+* Multiple clicks on previous/next buttons DO NOT overlap
+  unfortunately they are not yet chained, but simply disabled
 
 Roadmap/Wishlist
 ----------------
