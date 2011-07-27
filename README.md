@@ -131,5 +131,4 @@ Known Limitations
 
 Roadmap/Wishlist
 ----------------
-* Script size!! Merging the 'step' method into 'setupTabs' (bind event to 'previous/nextSlide' methods, without checking against 'loop': otherwise the event onmousedown default action won't be stopped, check with links and anchors)
 * Find the event 'click' srcElement and apply a "disabled" class when the 'bounce' option is set to false
