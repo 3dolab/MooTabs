@@ -16,7 +16,7 @@ Fork new features
 Demo
 ----------
 
-[See it in action](http://nayaab.github.com/MooTabs/)
+[See it in action](http://3dolab.github.com/MooTabs/)
 
 How to use
 ----------
